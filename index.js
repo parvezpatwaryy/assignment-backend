@@ -1,3 +1,5 @@
+const { auth } = require("./lib/auth");
+const { toHandler } = require("better-auth/express");
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
@@ -6,10 +8,11 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 8000;
 app.use(cors({
-  origin: ['https://assignment-frontend-parvez.vercel.app', 'http://localhost:3000'],
+  origin: ['https://assignment-frontend-parvez.vercel.app'],
   credentials: true
 }));
 app.use(express.json());
+app.all("/api/auth/*", toHandler(auth));
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, {
   serverApi: {
@@ -79,6 +82,7 @@ app.get('/api/ideas/:id', async (req, res) => {
     res.status(500).send({ message: "Internal Server Error", error: error.message });
   }
 });
+
 
 app.put('/api/ideas/:id', async (req, res) => {
   try {
